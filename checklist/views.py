@@ -138,4 +138,4 @@ class TaskElementView(APIView):
             return task
         
         task.delete()
-        return Response(204)
+        return Response(status=204)
