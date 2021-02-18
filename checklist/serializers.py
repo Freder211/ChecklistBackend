@@ -19,3 +19,16 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ['id', 'name', 'order']
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = [
+            'id',
+            'name',
+            'text',
+            'date',
+            'time',
+            'checked',
+            'notified',
+        ]
