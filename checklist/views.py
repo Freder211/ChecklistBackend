@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from checklist.models import List, Task
-from checklist.serializers import ListSerializer, TaskSerializer
+from checklist.serializers import ListSerializer, TaskSerializer, UserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
@@ -139,3 +139,12 @@ class TaskElementView(APIView):
         
         task.delete()
         return Response(status=204)
+
+class UserCreateView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=201)
+        
+        return Response(serializer.errors, status=400)
