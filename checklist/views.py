@@ -133,9 +133,22 @@ class TaskElementView(APIView):
             
 
             serializer.save(checklist=listObj)
-            return Response(status=201)
+            return Response(serializer.data, status=201)
         
         return Response(serializer.errors, status=400)
+    
+    def patch(self, request, list_id, task_id):
+        task=getTask(task_id, list_id ,request.user)
+        if isinstance(task, Response):
+            return task
+        
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=204)
+
+        return Response(serializer.errors, status=400)
+
     
     def delete(self, request, list_id, task_id):
         task=getTask(task_id, list_id ,request.user)

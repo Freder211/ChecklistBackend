@@ -16,9 +16,19 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         
 
 class ListSerializer(serializers.ModelSerializer):
+
+    checkedTasks = serializers.SerializerMethodField()
+    totalTasks = serializers.SerializerMethodField()
+
     class Meta:
         model = List
-        fields = ['id', 'name', 'order']
+        fields = ['id', 'name', 'order', 'checkedTasks', 'totalTasks']
+
+    def get_checkedTasks(self, obj):
+        return Task.objects.filter(checklist=obj.id, checked=True).count()
+
+    def get_totalTasks(self, obj):
+        return Task.objects.filter(checklist=obj.id).count()
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
