@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.core import exceptions
+from django.db.models.functions import Coalesce
 
 class UserViewSet(viewsets.ViewSet):
 
@@ -71,12 +72,19 @@ class TaskViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, list_id):
-        print('ciao')
+
         listObj=getList(list_id, request.user)
         if isinstance(listObj, Response):
             return listObj
+
+        ordering = getattr(listObj, 'order')
+        if ordering == 'Name':
+            tasks =  Task.objects.filter(checklist=listObj).order_by('name')    
+        elif ordering == 'Time':
+            tasks =  Task.objects.filter(checklist=listObj).order_by('date', 'time')    
+        else:
+            tasks =  Task.objects.filter(checklist=listObj)
         
-        tasks =  Task.objects.filter(checklist=listObj)
         serializer = TaskSerializer(tasks, many=True)
 
         return Response(serializer.data)
