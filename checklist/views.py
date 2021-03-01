@@ -78,16 +78,20 @@ class TaskViewSet(viewsets.ViewSet):
             return listObj
 
         ordering = getattr(listObj, 'order')
-        if ordering == 'Name':
-            tasks =  Task.objects.filter(checklist=listObj).order_by('name')    
-        elif ordering == 'Time':
-            tasks =  Task.objects.filter(checklist=listObj).order_by('date', 'time')    
+        if ordering == 'Time':
+            tasks =  Task.objects.filter(checklist=listObj).order_by(Coalesce('date', 'time').asc(nulls_last=True))    
+        elif ordering == '-Time':
+            tasks =  Task.objects.filter(checklist=listObj).order_by('-date', '-time')    
+        elif ordering == '-Name':
+            tasks =  Task.objects.filter(checklist=listObj).order_by('-name')    
         else:
-            tasks =  Task.objects.filter(checklist=listObj)
+            tasks =  Task.objects.filter(checklist=listObj).order_by('name')    
         
         serializer = TaskSerializer(tasks, many=True)
+        res = {'order':ordering}
+        res.update({'tasks':serializer.data})
 
-        return Response(serializer.data)
+        return Response(res)
     
     def create(self, request, list_id):
         serializer = TaskSerializer(data=request.data)

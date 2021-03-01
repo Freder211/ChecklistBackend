@@ -5,7 +5,7 @@ from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     #path('api-token-auth/', obtain_auth_token, name='authentication'),
-    path('api-token-auth/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/access/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
     #path('api/lists/', views.ListCollectionView.as_view(), name='getAllLists'),
@@ -61,8 +61,6 @@ urlpatterns = [
         }),
         name='taskOperations'
     ),
-
-
 
 
     path(
