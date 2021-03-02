@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.core import exceptions
 from django.db.models.functions import Coalesce
+from django.core.paginator import Paginator
 
 class UserViewSet(viewsets.ViewSet):
 
@@ -71,7 +72,7 @@ class ListViewSet(viewsets.ViewSet):
 class TaskViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
-    def list(self, request, list_id):
+    def list(self, request, list_id, page):
 
         listObj=getList(list_id, request.user)
         if isinstance(listObj, Response):
@@ -87,11 +88,19 @@ class TaskViewSet(viewsets.ViewSet):
         else:
             tasks =  Task.objects.filter(checklist=listObj).order_by('name')    
         
-        serializer = TaskSerializer(tasks, many=True)
-        res = {'order':ordering}
+        p = Paginator(tasks, 5)
+        if p.num_pages < page or page<=0:
+            return Response(data={'message': 'Page number not valid.'} ,status=404)
+
+        serializer = TaskSerializer(p.page(page).object_list, many=True)
+
+        res = {
+            'order':ordering,
+            'pages': p.num_pages
+        }
         res.update({'tasks':serializer.data})
 
-        return Response(res)
+        return Response(res, status=200)
     
     def create(self, request, list_id):
         serializer = TaskSerializer(data=request.data)

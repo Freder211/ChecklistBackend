@@ -37,7 +37,7 @@ urlpatterns = [
 
     #TASKS-----------
     path(
-        'api/tasks/<int:list_id>/', 
+        'api/tasks/<int:list_id>/<int:page>/', 
         views.TaskViewSet.as_view({
             'get': 'list',
         }),
