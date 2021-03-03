@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from django.core import exceptions
 from django.db.models.functions import Coalesce
 from django.core.paginator import Paginator
+from django.db.models import Q
+
 
 class UserViewSet(viewsets.ViewSet):
 
@@ -147,7 +149,14 @@ class TaskViewSet(viewsets.ViewSet):
         return Response(status=204)
 
 
+class DeadlineViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
 
+    def list(self, request):
+        tasks =  Task.objects.filter(Q(checklist__user=request.user), (Q(date__isnull=False) | Q(time__isnull=False)))
+        serializer = TaskSerializer(tasks, many=True)
+
+        return Response(serializer.data, status=200)
 
 
 

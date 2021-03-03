@@ -61,6 +61,15 @@ urlpatterns = [
         }),
         name='taskOperations'
     ),
+    #DEADLINES--------------
+    path(
+        'api/deadlines/',
+        views.DeadlineViewSet.as_view({
+            'get': 'list',
+        }),
+        name='getAllUserDeadlines'
+    ),
+
 
 
     path(
